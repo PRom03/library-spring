@@ -86,6 +86,11 @@ public class UserController {
         return userService.getAllUsers();
 
     }
+    @GetMapping(value="/{email}/role")
+    public ResponseEntity<?> findRole(@PathVariable String email) {
+        User user = userService.getUserByEmail(email).orElse(null);
+        return new ResponseEntity<>(Map.of("role",user.getRole().toString()), HttpStatus.OK);
+    }
     @DeleteMapping("/{id}")
     public void deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
