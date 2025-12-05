@@ -4,6 +4,8 @@ plugins {
 	id 'io.spring.dependency-management' version '1.1.7'
 }
 
+
+
 group = 'org.example'
 version = '0.0.1-SNAPSHOT'
 description = 'library'
@@ -23,7 +25,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
-
+	implementation 'com.vaadin:vaadin-core:24.2.0'
 	implementation 'org.postgresql:postgresql:42.7.4'
 	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
 	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
@@ -35,4 +37,7 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+tasks.named('processResources') {
+	duplicatesStrategy = DuplicatesStrategy.INCLUDE
 }

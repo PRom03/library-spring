@@ -1,12 +1,15 @@
 package org.example.library.Controllers;
 
+import org.example.library.Entities.Author;
 import org.example.library.Entities.Book;
+import org.example.library.Services.AuthorService;
 import org.example.library.Services.BookService;
+import org.example.library.Services.JwtService;
+import org.example.library.Services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,7 +19,10 @@ import java.util.Optional;
 public class BookController {
     @Autowired
     private BookService bookService;
-
+    @Autowired
+    private JwtService jwtService;
+    @Autowired
+    private UserService userService;
 
 
     @GetMapping(value = "/",produces = "application/json")
@@ -26,5 +32,38 @@ public class BookController {
     @GetMapping(value = "/{isbn}",produces = "application/json")
     public Optional<Book> findBookByIsbn(@PathVariable String isbn) {
         return bookService.findBookByIsbn(isbn);
+    }
+    @PostMapping(value = "/add",produces = "application/json")
+    public ResponseEntity<?> addBook(@RequestBody BookService.BookDTO bookDto, @RequestHeader("Authorization") String token) {
+        token=token.replace("Bearer ", "");
+        if(!userService.getUserByEmail(jwtService.extractEmail(token)).orElse(null).getRole().toString().equals("admin"))
+        {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+        return new ResponseEntity<>(bookService.save(bookDto), HttpStatus.CREATED);
+    }
+    @PatchMapping(value = "/{isbn}/update",produces = "application/json")
+    public ResponseEntity<?> updateBook(@PathVariable String isbn,@RequestBody BookService.BookDTO bookDto,
+                                          @RequestHeader("Authorization") String token) {
+        token=token.replace("Bearer ", "");
+        if(!userService.getUserByEmail(jwtService.extractEmail(token)).orElse(null).getRole().toString().equals("admin"))
+        {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+        Book book=bookService.findBookByIsbn(isbn).orElse(null);
+        if(book==null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(bookService.update(book,bookDto), HttpStatus.OK);
+    }
+    @DeleteMapping(value = "/{isbn}/delete")
+    public ResponseEntity<?> deleteBook(@PathVariable String isbn,@RequestHeader("Authorization") String token) {
+        token=token.replace("Bearer ", "");
+        if(!userService.getUserByEmail(jwtService.extractEmail(token)).orElse(null).getRole().toString().equals("admin"))
+        {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+        Book book=bookService.findBookByIsbn(isbn).orElse(null);
+        if(book==null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        bookService.delete(book);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

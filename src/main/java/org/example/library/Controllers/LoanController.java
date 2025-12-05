@@ -121,8 +121,10 @@ public class LoanController {
         return ResponseEntity.ok(Map.of("message","Kary naliczone"));
     }
     @GetMapping(value="",produces = "application/json")
-    public List<Loan> findAllLoans() {
-        return loanService.findAll();
+    public List<Loan> findAllLoans(@RequestHeader("Authorization") String token) {
+        token = token.replace("Bearer ", "");
+        User user=userService.getUserByEmail(jwtService.extractEmail(token)).orElse(null);
+        return loanService.findAll(user);
     }
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleIllegalState(LoanException ex) {

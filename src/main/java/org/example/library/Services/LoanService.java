@@ -4,6 +4,7 @@ import jakarta.transaction.Transactional;
 import org.example.library.Exceptions.*;
 import org.example.library.Entities.Loan;
 import org.example.library.Entities.UserRole;
+import org.example.library.Entities.User;
 import org.example.library.Repositories.BookRepository;
 import org.example.library.Repositories.LoanRepository;
 import org.example.library.Repositories.UserRepository;
@@ -26,6 +27,8 @@ public class LoanService {
     private LoanRepository loanRepository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private JwtService jwtService;
 
     public boolean exists(Integer bookId, String isbn, List<String> loanedAuthors) {
         return loanRepository.exists(bookId,isbn,loanedAuthors);
@@ -153,7 +156,10 @@ public class LoanService {
             loanRepository.save(loan);
         }
     }
-    public List<Loan> findAll(){
+    public List<Loan> findAll(User user){
+        if(user.getRole().toString().equals("client")) {
+            return loanRepository.findByUserId(user.getId());
+        }
         return loanRepository.findAll();
     }
 

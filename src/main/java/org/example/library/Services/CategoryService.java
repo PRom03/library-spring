@@ -1,7 +1,9 @@
 package org.example.library.Services;
 
+import org.example.library.Entities.Author;
 import org.example.library.Entities.Category;
 import org.example.library.Repositories.CategoryRepository;
+import org.example.library.SimpleDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,5 +24,17 @@ public class CategoryService {
     }
     public Optional<Category> findCategoryById(Long id) {
         return categoryRepository.findById(id);
+    }
+    public Category save(SimpleDto dto) {
+        Category category=new Category();
+        category.setName(dto.name());
+        return categoryRepository.save(category);
+    }
+    public Category update(Category category, SimpleDto dto) {
+        category.setName(dto.name());
+        return categoryRepository.save(category);
+    }
+    public void delete(Category category) {
+        categoryRepository.delete(category);
     }
 }

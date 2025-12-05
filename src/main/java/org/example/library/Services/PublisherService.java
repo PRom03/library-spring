@@ -1,7 +1,9 @@
 package org.example.library.Services;
 
+import org.example.library.Entities.Category;
 import org.example.library.Entities.Publisher;
 import org.example.library.Repositories.PublisherRepository;
+import org.example.library.SimpleDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,5 +22,17 @@ public class PublisherService {
     }
     public Optional<Publisher> findPublisherById(Long id) {
         return publisherRepository.findById(id);
+    }
+    public Publisher save(SimpleDto dto) {
+        Publisher publisher = new Publisher();
+        publisher.setName(dto.name());
+        return publisherRepository.save(publisher);
+    }
+    public Publisher update(Publisher publisher, SimpleDto dto) {
+        publisher.setName(dto.name());
+        return publisherRepository.save(publisher);
+    }
+    public void delete(Publisher publisher) {
+        publisherRepository.delete(publisher);
     }
 }

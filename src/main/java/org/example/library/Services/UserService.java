@@ -73,7 +73,7 @@ public class UserService {
         user.setEmail(request.getEmail());
         user.setFirstname(request.getFirstname());
         user.setLastname(request.getLastname());
-        user.setRole(UserRole.librarian);
+        user.setRole(UserRole.admin);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         return userRepository.save(user);
     }
