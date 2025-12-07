@@ -3,6 +3,7 @@ package org.example.library;
 import com.jayway.jsonpath.JsonPath;
 import org.example.library.Controllers.LoanController;
 import org.example.library.Entities.Loan;
+import org.example.library.Entities.User;
 import org.example.library.Services.JwtService;
 import org.example.library.Services.LoanService;
 import org.example.library.Services.UserService;
@@ -21,7 +22,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import java.util.List;
+import java.util.Optional;
 
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -39,36 +42,28 @@ public class LoanTest {
     private UserService userService;
     @MockitoBean
     private JwtService jwtService;
-    @Test
-    void findAll() throws Exception {
-//        when(loanService.findAll()!=null).then(new Answer<List<Loan>>() {
-//            @Override
-//            public List<Loan> answer(InvocationOnMock invocation) throws Throwable {
-//                return loanService.findAll();
-//            }
-//        }
-//        );
-        this.mvc.perform(get("/api/loans")).andDo(print()).andExpect(status().isOk());
 
-    }
     @ParameterizedTest
     @CsvSource(textBlock = """
 '9788301214575'
             """)
     void testLoanCreation(String isbn) throws Exception{
-        MvcResult login = this.mvc.perform(post("/api/users/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("""
-            { "email": "jkowalski@mail.pl", "password": "jan123" }
-        """)
-        ).andReturn();
+        User mockUser = new User();
+        mockUser.setId(1);
+        mockUser.setEmail("jkowalski@mail.pl");
+        mockUser.setPassword("jan123");
 
-        String token = JsonPath.read(
-                login.getResponse().getContentAsString(),
-                "$.token"
-        );
-        String json="{\"isbn\":\""+isbn+"\"}";
-        String authHeader="Bearer "+token;
-        this.mvc.perform(post("/api/loans").header("Authorization",authHeader).contentType(MediaType.APPLICATION_JSON).content(json)).andExpect(status().isCreated());
+        when(userService.getUserByEmail("jkowalski@mail.pl")).thenReturn(Optional.of(mockUser));
+        when(jwtService.extractEmail(anyString())).thenReturn("jkowalski@mail.pl");
+
+        String json = "{\"isbn\":\"" + isbn + "\"}";
+        String authHeader = "Bearer faktyczny-token";
+
+        mvc.perform(post("/api/loans")
+                        .header("Authorization", authHeader)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isCreated());
+
     }
 }
