@@ -1,16 +1,26 @@
 package org.example.library.Controllers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nimbusds.jose.util.Resource;
 import org.example.library.Entities.Author;
 import org.example.library.Entities.Book;
+import org.example.library.Repositories.BookRepository;
 import org.example.library.Services.AuthorService;
 import org.example.library.Services.BookService;
 import org.example.library.Services.JwtService;
 import org.example.library.Services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,7 +33,8 @@ public class BookController {
     private JwtService jwtService;
     @Autowired
     private UserService userService;
-
+    @Autowired
+    private BookRepository bookRepository;
 
     @GetMapping(value = "/",produces = "application/json")
     public List<Book> findAll() {
@@ -66,4 +77,32 @@ public class BookController {
         bookService.delete(book);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+    @GetMapping(value = "/export", produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
+    public ResponseEntity<?> export(@RequestParam(defaultValue = "json") String format) throws Exception {
+        if (format.equalsIgnoreCase("xml")) {
+            return ResponseEntity.ok()
+                    .contentType(MediaType.APPLICATION_XML)
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=data.xml")
+                    .body(bookService.exportToXml());
+        }
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=data.json")
+                .body(bookService.exportToJson());
+    }
+    @PostMapping(value = "/import", consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
+    public ResponseEntity<String> importData(@RequestBody String fileContent,
+                                             @RequestHeader("Content-Type") String contentType)
+            throws Exception {
+
+        if (contentType.contains("xml")) {
+            bookService.importXml(fileContent);
+        } else {
+            bookService.importJson(fileContent);
+        }
+
+        return ResponseEntity.ok("Import zakończony.");
+    }
+
 }
