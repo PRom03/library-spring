@@ -79,7 +79,7 @@ public class LoanService {
         var loan = loanRepository.findById(loanId)
                 .orElseThrow(() -> new LoanException("Nie znaleziono"));
 
-        if ("client".equals(role) && "reserved".equals(loan.getStatus())) {
+        if ("client".equals(role) &&  loan.getUser().getId().equals(userId)&&"reserved".equals(loan.getStatus())) {
             var book = loan.getBook();
             book.setAvailable(book.getAvailable()+1);
             bookRepository.save(book);
