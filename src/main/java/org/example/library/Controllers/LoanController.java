@@ -120,7 +120,12 @@ public class LoanController {
     }
 
     @PostMapping("/penalties")
-    public ResponseEntity<?> calculatePenalties() {
+    public ResponseEntity<?> calculatePenalties(@RequestHeader("Authorization") String token) {
+        token = token.replace("Bearer ", "");
+        if(!userService.getUserByEmail(jwtService.extractEmail(token)).orElse(null).getRole().toString().equals("librarian"))
+        {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
         loanService.calculatePenalties();
         return ResponseEntity.ok(Map.of("message","Kary naliczone"));
     }
