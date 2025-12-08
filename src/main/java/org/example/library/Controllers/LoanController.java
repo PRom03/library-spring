@@ -79,6 +79,10 @@ public class LoanController {
     public ResponseEntity<?> createLoan(@RequestHeader("Authorization") String token,
                                         @RequestBody LoanRequest dto) {
         token = token.replace("Bearer ", "");
+        if(!userService.getUserByEmail(jwtService.extractEmail(token)).orElse(null).getRole().toString().equals("client"))
+        {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
         var loan = loanService.createLoan(Long.valueOf(userService.getUserByEmail(jwtService.extractEmail(token)).orElse(null).getId()), dto.isbn());
         return ResponseEntity.status(HttpStatus.CREATED).body(loan);
     }

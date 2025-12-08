@@ -55,7 +55,11 @@ public class UserController {
         return userService.getUserById(id)
                 .orElseThrow(() -> new RuntimeException("User not found with id " + id));
     }
-
+    @GetMapping("/me")
+    public User getMe(@RequestHeader("Authorization") String token) {
+        token=token.replace("Bearer ", "");
+        return userService.getUserByEmail(jwtService.extractEmail(token)).orElse(null);
+    }
     @PostMapping(value = "/register",produces = "application/json")
     public User createUser(@RequestBody UserService.RegisterRequest registerRequest) {
         return userService.createUser(registerRequest);

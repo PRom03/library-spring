@@ -93,9 +93,13 @@ public class BookController {
     }
     @PostMapping(value = "/import", consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
     public ResponseEntity<String> importData(@RequestBody String fileContent,
-                                             @RequestHeader("Content-Type") String contentType)
+                                             @RequestHeader("Content-Type") String contentType,@RequestHeader("Authorization")String token)
             throws Exception {
-
+        token=token.replace("Bearer ", "");
+        if(!userService.getUserByEmail(jwtService.extractEmail(token)).orElse(null).getRole().toString().equals("admin"))
+        {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
         if (contentType.contains("xml")) {
             bookService.importXml(fileContent);
         } else {
