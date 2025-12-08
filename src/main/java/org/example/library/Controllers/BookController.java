@@ -47,6 +47,9 @@ public class BookController {
     @PostMapping(value = "/add",produces = "application/json")
     public ResponseEntity<?> addBook(@RequestBody BookService.BookDTO bookDto, @RequestHeader("Authorization") String token) {
         token=token.replace("Bearer ", "");
+        if(jwtService.isExpired(token)) {
+            return new ResponseEntity<>("Token is expired", HttpStatus.UNAUTHORIZED);
+        }
         if(!userService.getUserByEmail(jwtService.extractEmail(token)).orElse(null).getRole().toString().equals("admin"))
         {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -57,6 +60,9 @@ public class BookController {
     public ResponseEntity<?> updateBook(@PathVariable String isbn,@RequestBody BookService.BookDTO bookDto,
                                           @RequestHeader("Authorization") String token) {
         token=token.replace("Bearer ", "");
+        if(jwtService.isExpired(token)) {
+            return new ResponseEntity<>("Token is expired", HttpStatus.UNAUTHORIZED);
+        }
         if(!userService.getUserByEmail(jwtService.extractEmail(token)).orElse(null).getRole().toString().equals("admin"))
         {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -68,6 +74,9 @@ public class BookController {
     @DeleteMapping(value = "/{isbn}/delete")
     public ResponseEntity<?> deleteBook(@PathVariable String isbn,@RequestHeader("Authorization") String token) {
         token=token.replace("Bearer ", "");
+        if(jwtService.isExpired(token)) {
+            return new ResponseEntity<>("Token is expired", HttpStatus.UNAUTHORIZED);
+        }
         if(!userService.getUserByEmail(jwtService.extractEmail(token)).orElse(null).getRole().toString().equals("admin"))
         {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -96,6 +105,9 @@ public class BookController {
                                              @RequestHeader("Content-Type") String contentType,@RequestHeader("Authorization")String token)
             throws Exception {
         token=token.replace("Bearer ", "");
+        if(jwtService.isExpired(token)) {
+            return new ResponseEntity<>("Token is expired", HttpStatus.UNAUTHORIZED);
+        }
         if(!userService.getUserByEmail(jwtService.extractEmail(token)).orElse(null).getRole().toString().equals("admin"))
         {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);

@@ -34,6 +34,12 @@ public class CategoryController {
     @PostMapping(value = "/add",produces = "application/json")
     public ResponseEntity<?> addCategory(@RequestBody SimpleDto dto, @RequestHeader("Authorization") String token) {
         token=token.replace("Bearer ", "");
+        if(jwtService.isExpired(token)) {
+            return new ResponseEntity<>("Token is expired", HttpStatus.UNAUTHORIZED);
+        }
+        if(jwtService.isExpired(token)) {
+            return new ResponseEntity<>("Token is expired", HttpStatus.UNAUTHORIZED);
+        }
         if(!userService.getUserByEmail(jwtService.extractEmail(token)).orElse(null).getRole().toString().equals("admin"))
         {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -44,6 +50,9 @@ public class CategoryController {
     public ResponseEntity<?> updateCategory(@PathVariable Integer id, @RequestBody SimpleDto dto,
                                           @RequestHeader("Authorization") String token) {
         token=token.replace("Bearer ", "");
+        if(jwtService.isExpired(token)) {
+            return new ResponseEntity<>("Token is expired", HttpStatus.UNAUTHORIZED);
+        }
         if(!userService.getUserByEmail(jwtService.extractEmail(token)).orElse(null).getRole().toString().equals("admin"))
         {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -54,6 +63,10 @@ public class CategoryController {
     }
     @DeleteMapping(value = "/{id}/delete",produces = "application/json")
     public ResponseEntity<?> deleteCategory(@PathVariable Long id,@RequestHeader("Authorization") String token) {
+        token=token.replace("Bearer ","");
+        if(jwtService.isExpired(token)) {
+            return new ResponseEntity<>("Token is expired", HttpStatus.UNAUTHORIZED);
+        }
         Category category=categoryService.findCategoryById(Long.valueOf(id)).orElse(null);
         if(category==null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         categoryService.delete(category);

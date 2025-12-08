@@ -43,7 +43,7 @@ public class JwtService {
         return email.equals(userDetails.getEmail()) && !isExpired(token);
     }
 
-    private boolean isExpired(String token) {
+    public boolean isExpired(String token) {
         Date exp = Jwts.parser().setSigningKey(key)
                 .parseClaimsJws(token).getBody().getExpiration();
         return exp.before(new Date());

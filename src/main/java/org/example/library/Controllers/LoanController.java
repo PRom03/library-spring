@@ -79,6 +79,9 @@ public class LoanController {
     public ResponseEntity<?> createLoan(@RequestHeader("Authorization") String token,
                                         @RequestBody LoanRequest dto) {
         token = token.replace("Bearer ", "");
+        if(jwtService.isExpired(token)) {
+            return new ResponseEntity<>("Token is expired", HttpStatus.UNAUTHORIZED);
+        }
         if(!userService.getUserByEmail(jwtService.extractEmail(token)).orElse(null).getRole().toString().equals("client"))
         {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -91,7 +94,9 @@ public class LoanController {
     public ResponseEntity<?> deleteLoan(@PathVariable Long id,
                                         @RequestHeader("Authorization") String token) {
         token = token.replace("Bearer ", "");
-
+        if(jwtService.isExpired(token)) {
+            return new ResponseEntity<>("Token is expired", HttpStatus.UNAUTHORIZED);
+        }
         loanService.deleteReservation(id, userService.getUserByEmail(jwtService.extractEmail(token)).orElse(null).getId(), userService.getUserByEmail(jwtService.extractEmail(token)).orElse(null).getRole().toString());
         return ResponseEntity.ok().body(Map.of("message", "Rezerwacja usunięta"));
     }
@@ -99,6 +104,9 @@ public class LoanController {
     public ResponseEntity<?> markLoaned(@PathVariable Long id,
                                         @RequestHeader("Authorization") String token) {
         token = token.replace("Bearer ", "");
+        if(jwtService.isExpired(token)) {
+            return new ResponseEntity<>("Token is expired", HttpStatus.UNAUTHORIZED);
+        }
         loanService.markLoaned(id, userService.getUserByEmail(jwtService.extractEmail(token)).orElse(null).getRole().toString());
         return ResponseEntity.ok(Map.of("message","Książka oznaczona jako wypożyczona"));
     }
@@ -107,6 +115,9 @@ public class LoanController {
     public ResponseEntity<?> markReturned(@PathVariable Long id,
                                           @RequestHeader("Authorization") String token) {
         token = token.replace("Bearer ", "");
+        if(jwtService.isExpired(token)) {
+            return new ResponseEntity<>("Token is expired", HttpStatus.UNAUTHORIZED);
+        }
         loanService.markReturned(id, userService.getUserByEmail(jwtService.extractEmail(token)).orElse(null).getRole().toString());
         return ResponseEntity.ok(Map.of("message","Książka zwrócona"));
     }
@@ -115,6 +126,9 @@ public class LoanController {
     public ResponseEntity<?> prolong(@PathVariable Long id,
                                      @RequestHeader("Authorization") String token) {
         token=token.replace("Bearer ", "");
+        if(jwtService.isExpired(token)) {
+            return new ResponseEntity<>("Token is expired", HttpStatus.UNAUTHORIZED);
+        }
         loanService.prolongLoan(id, Long.valueOf(userService.getUserByEmail(jwtService.extractEmail(token)).orElse(null).getId()));
         return ResponseEntity.ok(Map.of("message","Przedłużono wypożyczenie o miesiąc"));
     }
@@ -122,6 +136,9 @@ public class LoanController {
     @PostMapping("/penalties")
     public ResponseEntity<?> calculatePenalties(@RequestHeader("Authorization") String token) {
         token = token.replace("Bearer ", "");
+        if(jwtService.isExpired(token)) {
+            return new ResponseEntity<>("Token is expired", HttpStatus.UNAUTHORIZED);
+        }
         if(!userService.getUserByEmail(jwtService.extractEmail(token)).orElse(null).getRole().toString().equals("librarian"))
         {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -130,10 +147,13 @@ public class LoanController {
         return ResponseEntity.ok(Map.of("message","Kary naliczone"));
     }
     @GetMapping(value="",produces = "application/json")
-    public List<Loan> findAllLoans(@RequestHeader("Authorization") String token) {
+    public ResponseEntity<?> findAllLoans(@RequestHeader("Authorization") String token) {
         token = token.replace("Bearer ", "");
+        if(jwtService.isExpired(token)) {
+            return new ResponseEntity<>("Token is expired", HttpStatus.UNAUTHORIZED);
+        }
         User user=userService.getUserByEmail(jwtService.extractEmail(token)).orElse(null);
-        return loanService.findAll(user);
+        return new ResponseEntity<>(loanService.findAll(user),HttpStatus.OK);
     }
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleIllegalState(LoanException ex) {

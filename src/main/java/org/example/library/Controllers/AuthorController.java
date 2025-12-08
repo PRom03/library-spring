@@ -35,6 +35,9 @@ public class AuthorController {
     @PostMapping(value = "/add",produces = "application/json")
     public ResponseEntity<?> addAuthor(@RequestBody AuthorService.AuthorDTO authorDto,@RequestHeader("Authorization") String token) {
         token=token.replace("Bearer ", "");
+        if(jwtService.isExpired(token)) {
+            return new ResponseEntity<>("Token is expired", HttpStatus.UNAUTHORIZED);
+        }
         if(!userService.getUserByEmail(jwtService.extractEmail(token)).orElse(null).getRole().toString().equals("admin"))
         {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -45,6 +48,9 @@ public class AuthorController {
     public ResponseEntity<?> updateAuthor(@PathVariable Integer id,@RequestBody AuthorService.AuthorDTO authorDto,
                                           @RequestHeader("Authorization") String token) {
         token=token.replace("Bearer ", "");
+        if(jwtService.isExpired(token)) {
+            return new ResponseEntity<>("Token is expired", HttpStatus.UNAUTHORIZED);
+        }
         if(!userService.getUserByEmail(jwtService.extractEmail(token)).orElse(null).getRole().toString().equals("admin"))
         {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -56,6 +62,9 @@ public class AuthorController {
     @DeleteMapping(value = "/{id}/delete",produces = "application/json")
     public ResponseEntity<?> deleteAuthor(@PathVariable Long id,@RequestHeader("Authorization") String token) {
         token=token.replace("Bearer ", "");
+        if(jwtService.isExpired(token)) {
+            return new ResponseEntity<>("Token is expired", HttpStatus.UNAUTHORIZED);
+        }
         if(!userService.getUserByEmail(jwtService.extractEmail(token)).orElse(null).getRole().toString().equals("admin"))
         {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
