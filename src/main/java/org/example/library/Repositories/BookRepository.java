@@ -11,8 +11,16 @@ public interface BookRepository extends JpaRepository<Book, Long> {
     Optional<Book> findBookByIsbn(String isbn);
 
     @Query("""
-SELECT b FROM Book b where b.category.id IN :categoryIds and b.isbn not in :excludedBookIsbns
-""")
-    List<Book> findByCategoryIdInAndIdNotIn(List<Integer> categoryIds, List<String> excludedBookIsbns);
+           SELECT b 
+           FROM Book b 
+           WHERE LOWER(b.title) LIKE :query 
+              OR LOWER(CONCAT(b.author.firstName, ' ', b.author.lastName)) LIKE :query
+              OR LOWER(b.author.firstName) LIKE :query
+              OR LOWER(b.author.lastName) LIKE :query
+              OR lower(b.category.name) LIKE :query
+              OR lower(b.publisher.name) LIKE :query
+           """)
+    
     List<Book> search(String query);
+    List<Book> findByCategoryIdInAndIdNotIn(List<Integer> categoryIds, List<String> excludedBookIsbns);
 }
