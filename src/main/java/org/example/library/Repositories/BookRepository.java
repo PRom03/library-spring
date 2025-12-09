@@ -14,4 +14,5 @@ public interface BookRepository extends JpaRepository<Book, Long> {
 SELECT b FROM Book b where b.category.id IN :categoryIds and b.isbn not in :excludedBookIsbns
 """)
     List<Book> findByCategoryIdInAndIdNotIn(List<Integer> categoryIds, List<String> excludedBookIsbns);
+    List<Book> search(String query);
 }
