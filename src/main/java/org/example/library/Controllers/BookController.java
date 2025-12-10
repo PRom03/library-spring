@@ -38,16 +38,17 @@ public class BookController {
         return bookService.findAll();
     }
     @GetMapping(value = "/{isbn}",produces = "application/json")
-    public Optional<Book> findBookByIsbn(@PathVariable String isbn) {
-        return bookService.findBookByIsbn(isbn);
+    public Book findBookByIsbn(@PathVariable String isbn) {
+        return bookService.findBookByIsbn(isbn).orElseThrow();
     }
     @PostMapping(value = "/add",produces = "application/json")
     public ResponseEntity<?> addBook(@RequestBody BookService.BookDTO bookDto, @RequestHeader("Authorization") String token) {
-        token=token.replace("Bearer ", "");
+        if (token.startsWith("Bearer")) token=token.replace("Bearer ", "");
+        else return new ResponseEntity<>("Invalid token", HttpStatus.UNAUTHORIZED);
         if(jwtService.isExpired(token)) {
             return new ResponseEntity<>("Token is expired", HttpStatus.UNAUTHORIZED);
         }
-        if(!userService.getUserByEmail(jwtService.extractEmail(token)).orElse(null).getRole().toString().equals("admin"))
+        if(!userService.getUserByEmail(jwtService.extractEmail(token)).orElseThrow().getRole().toString().equals("admin"))
         {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
@@ -56,11 +57,12 @@ public class BookController {
     @PatchMapping(value = "/{isbn}/update",produces = "application/json")
     public ResponseEntity<?> updateBook(@PathVariable String isbn,@RequestBody BookService.BookDTO bookDto,
                                           @RequestHeader("Authorization") String token) {
-        token=token.replace("Bearer ", "");
+        if (token.startsWith("Bearer")) token=token.replace("Bearer ", "");
+        else return new ResponseEntity<>("Invalid token", HttpStatus.UNAUTHORIZED);
         if(jwtService.isExpired(token)) {
             return new ResponseEntity<>("Token is expired", HttpStatus.UNAUTHORIZED);
         }
-        if(!userService.getUserByEmail(jwtService.extractEmail(token)).orElse(null).getRole().toString().equals("admin"))
+        if(!userService.getUserByEmail(jwtService.extractEmail(token)).orElseThrow().getRole().toString().equals("admin"))
         {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
@@ -70,11 +72,12 @@ public class BookController {
     }
     @DeleteMapping(value = "/{isbn}/delete")
     public ResponseEntity<?> deleteBook(@PathVariable String isbn,@RequestHeader("Authorization") String token) {
-        token=token.replace("Bearer ", "");
+        if (token.startsWith("Bearer")) token=token.replace("Bearer ", "");
+        else return new ResponseEntity<>("Invalid token", HttpStatus.UNAUTHORIZED);
         if(jwtService.isExpired(token)) {
             return new ResponseEntity<>("Token is expired", HttpStatus.UNAUTHORIZED);
         }
-        if(!userService.getUserByEmail(jwtService.extractEmail(token)).orElse(null).getRole().toString().equals("admin"))
+        if(!userService.getUserByEmail(jwtService.extractEmail(token)).orElseThrow().getRole().toString().equals("admin"))
         {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
@@ -101,11 +104,12 @@ public class BookController {
     public ResponseEntity<String> importData(@RequestBody String fileContent,
                                              @RequestHeader("Content-Type") String contentType,@RequestHeader("Authorization")String token)
             throws Exception {
-        token=token.replace("Bearer ", "");
+        if (token.startsWith("Bearer")) token=token.replace("Bearer ", "");
+        else return new ResponseEntity<>("Invalid token", HttpStatus.UNAUTHORIZED);
         if(jwtService.isExpired(token)) {
             return new ResponseEntity<>("Token is expired", HttpStatus.UNAUTHORIZED);
         }
-        if(!userService.getUserByEmail(jwtService.extractEmail(token)).orElse(null).getRole().toString().equals("admin"))
+        if(!userService.getUserByEmail(jwtService.extractEmail(token)).orElseThrow().getRole().toString().equals("admin"))
         {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }

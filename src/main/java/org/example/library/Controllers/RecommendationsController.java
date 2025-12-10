@@ -28,7 +28,9 @@ public class RecommendationsController {
     }
 
     @GetMapping("/")
-    public ResponseEntity<List<Book>> getUserRecommendations(@RequestHeader("Authorization") String token) {
-        return new ResponseEntity<>(recommendationsService.getRecommendations(userService.getUserByEmail(jwtService.extractEmail(token.replace("Bearer ",""))).orElse(null).getId()), HttpStatus.OK);
+    public ResponseEntity<?> getUserRecommendations(@RequestHeader("Authorization") String token) {
+        if (token.startsWith("Bearer")) token=token.replace("Bearer ", "");
+        else return new ResponseEntity<>("Invalid token", HttpStatus.UNAUTHORIZED);
+        return new ResponseEntity<>(recommendationsService.getRecommendations(userService.getUserByEmail(jwtService.extractEmail(token.replace("Bearer ",""))).orElseThrow().getId()), HttpStatus.OK);
     }
 }

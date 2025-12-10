@@ -28,19 +28,20 @@ public class CategoryController {
         return categoryService.findAll();
     }
     @GetMapping(value = "/{id}",produces = "application/json")
-    public Optional<Category> findCategoryById(@PathVariable Long id) {
-        return categoryService.findCategoryById(id);
+    public Category findCategoryById(@PathVariable Long id) {
+        return categoryService.findCategoryById(id).orElseThrow();
     }
     @PostMapping(value = "/add",produces = "application/json")
     public ResponseEntity<?> addCategory(@RequestBody SimpleDto dto, @RequestHeader("Authorization") String token) {
-        token=token.replace("Bearer ", "");
+        if (token.startsWith("Bearer")) token=token.replace("Bearer ", "");
+        else return new ResponseEntity<>("Invalid token", HttpStatus.UNAUTHORIZED);
         if(jwtService.isExpired(token)) {
             return new ResponseEntity<>("Token is expired", HttpStatus.UNAUTHORIZED);
         }
         if(jwtService.isExpired(token)) {
             return new ResponseEntity<>("Token is expired", HttpStatus.UNAUTHORIZED);
         }
-        if(!userService.getUserByEmail(jwtService.extractEmail(token)).orElse(null).getRole().toString().equals("admin"))
+        if(!userService.getUserByEmail(jwtService.extractEmail(token)).orElseThrow().getRole().toString().equals("admin"))
         {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
@@ -49,7 +50,8 @@ public class CategoryController {
     @PatchMapping(value = "/{id}/update",produces = "application/json")
     public ResponseEntity<?> updateCategory(@PathVariable Integer id, @RequestBody SimpleDto dto,
                                           @RequestHeader("Authorization") String token) {
-        token=token.replace("Bearer ", "");
+        if (token.startsWith("Bearer")) token=token.replace("Bearer ", "");
+        else return new ResponseEntity<>("Invalid token", HttpStatus.UNAUTHORIZED);
         if(jwtService.isExpired(token)) {
             return new ResponseEntity<>("Token is expired", HttpStatus.UNAUTHORIZED);
         }
@@ -63,7 +65,8 @@ public class CategoryController {
     }
     @DeleteMapping(value = "/{id}/delete",produces = "application/json")
     public ResponseEntity<?> deleteCategory(@PathVariable Long id,@RequestHeader("Authorization") String token) {
-        token=token.replace("Bearer ","");
+        if (token.startsWith("Bearer")) token=token.replace("Bearer ", "");
+        else return new ResponseEntity<>("Invalid token", HttpStatus.UNAUTHORIZED);
         if(jwtService.isExpired(token)) {
             return new ResponseEntity<>("Token is expired", HttpStatus.UNAUTHORIZED);
         }

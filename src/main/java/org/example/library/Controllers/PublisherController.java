@@ -32,16 +32,17 @@ public class PublisherController {
     }
     @GetMapping(value = "/{id}",produces = "application/json")
 
-    public Optional<Publisher> findById(@PathVariable Long id) {
-        return publisherService.findPublisherById(id);
+    public Publisher findById(@PathVariable Long id) {
+        return publisherService.findPublisherById(id).orElseThrow();
     }
     @PostMapping(value = "/add",produces = "application/json")
     public ResponseEntity<?> addPublisher(@RequestBody SimpleDto dto, @RequestHeader("Authorization") String token) {
-        token=token.replace("Bearer ", "");
+        if (token.startsWith("Bearer")) token=token.replace("Bearer ", "");
+        else return new ResponseEntity<>("Invalid token", HttpStatus.UNAUTHORIZED);
         if(jwtService.isExpired(token)) {
             return new ResponseEntity<>("Token is expired", HttpStatus.UNAUTHORIZED);
         }
-        if(!userService.getUserByEmail(jwtService.extractEmail(token)).orElse(null).getRole().toString().equals("admin"))
+        if(!userService.getUserByEmail(jwtService.extractEmail(token)).orElseThrow().getRole().toString().equals("admin"))
         {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
@@ -51,11 +52,12 @@ public class PublisherController {
             value = "/{id}/update",produces = "application/json")
     public ResponseEntity<?> updatePublisher(@PathVariable Integer id, @RequestBody SimpleDto dto,
                                             @RequestHeader("Authorization") String token) {
-        token=token.replace("Bearer ", "");
+        if (token.startsWith("Bearer")) token=token.replace("Bearer ", "");
+        else return new ResponseEntity<>("Invalid token", HttpStatus.UNAUTHORIZED);
         if(jwtService.isExpired(token)) {
             return new ResponseEntity<>("Token is expired", HttpStatus.UNAUTHORIZED);
         }
-        if(!userService.getUserByEmail(jwtService.extractEmail(token)).orElse(null).getRole().toString().equals("admin"))
+        if(!userService.getUserByEmail(jwtService.extractEmail(token)).orElseThrow().getRole().toString().equals("admin"))
         {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
@@ -65,11 +67,12 @@ public class PublisherController {
     }
     @DeleteMapping(value = "/{id}/delete",produces = "application/json")
     public ResponseEntity<?> deletePublisher(@PathVariable Long id,@RequestHeader("Authorization") String token) {
-        token=token.replace("Bearer ", "");
+        if (token.startsWith("Bearer")) token=token.replace("Bearer ", "");
+        else return new ResponseEntity<>("Invalid token", HttpStatus.UNAUTHORIZED);
         if(jwtService.isExpired(token)) {
             return new ResponseEntity<>("Token is expired", HttpStatus.UNAUTHORIZED);
         }
-        Publisher publisher=publisherService.findPublisherById(Long.valueOf(id)).orElse(null);
+        Publisher publisher=publisherService.findPublisherById(id).orElse(null);
         if(publisher==null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         publisherService.delete(publisher);
         return new ResponseEntity<>(HttpStatus.OK);

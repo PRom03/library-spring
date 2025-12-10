@@ -59,7 +59,7 @@ public class LoanService {
 
         var loan = new Loan();
         loan.setBook(book);
-        loan.setUser(userRepository.findById(userId).orElse(null));
+        loan.setUser(userRepository.findById(userId).orElseThrow());
         loan.setLoanDate(LocalDateTime.now());
         loan.setStatus(LoanStatus.reserved.toString());
         loan.setProlonged(false);
@@ -125,7 +125,7 @@ public class LoanService {
         var loan = loanRepository.findById(loanId)
                 .orElseThrow(() -> new LoanException("Nie znaleziono"));
 
-        if (!(loan.getUser().getId().equals(userId)||userRepository.findById(userId).orElse(null).getRole().toString().equals(UserRole.librarian.toString()))) {
+        if (!(loan.getUser().getId().equals(userId)||userRepository.findById(userId).orElseThrow().getRole().toString().equals(UserRole.librarian.toString()))) {
             throw new LoanException("Brak uprawnień");
         }
         if (loan.getProlonged()) {

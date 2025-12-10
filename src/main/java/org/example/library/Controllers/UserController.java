@@ -58,7 +58,7 @@ public class UserController {
     @GetMapping("/me")
     public User getMe(@RequestHeader("Authorization") String token) {
         token=token.replace("Bearer ", "");
-        return userService.getUserByEmail(jwtService.extractEmail(token)).orElse(null);
+        return userService.getUserByEmail(jwtService.extractEmail(token)).orElseThrow();
     }
     @PostMapping(value = "/register",produces = "application/json")
     public User createUser(@RequestBody UserService.RegisterRequest registerRequest) {
@@ -92,7 +92,7 @@ public class UserController {
     }
     @GetMapping(value="/{email}/role")
     public ResponseEntity<?> findRole(@PathVariable String email) {
-        User user = userService.getUserByEmail(email).orElse(null);
+        User user = userService.getUserByEmail(email).orElseThrow();
         return new ResponseEntity<>(Map.of("role",user.getRole().toString()), HttpStatus.OK);
     }
     @DeleteMapping("/{id}")

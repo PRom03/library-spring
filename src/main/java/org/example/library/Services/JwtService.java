@@ -38,10 +38,7 @@ public class JwtService {
     }
 
 
-    public boolean validateToken(String token, MyUserDetails userDetails) {
-        String email = extractEmail(token);
-        return email.equals(userDetails.getEmail()) && !isExpired(token);
-    }
+
 
     public boolean isExpired(String token) {
         Date exp = Jwts.parser().setSigningKey(key)
