@@ -5,17 +5,14 @@ import org.example.library.Exceptions.*;
 import org.example.library.Entities.Loan;
 import org.example.library.Entities.UserRole;
 import org.example.library.Entities.User;
-import org.example.library.LoanStatus;
+import org.example.library.Utilities.LoanStatus;
 import org.example.library.Repositories.BookRepository;
 import org.example.library.Repositories.LoanRepository;
 import org.example.library.Repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DeadlockLoserDataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 

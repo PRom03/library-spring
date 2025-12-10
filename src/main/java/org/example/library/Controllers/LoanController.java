@@ -6,6 +6,7 @@ import org.example.library.Exceptions.LoanException;
 import org.example.library.Services.JwtService;
 import org.example.library.Services.LoanService;
 import org.example.library.Services.UserService;
+import org.example.library.Services.ValidationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -27,7 +28,9 @@ public class LoanController {
     private UserService userService;
     @Autowired
     private JwtService jwtService;
-
+    private final String[]roles={"client","librarian"};
+    @Autowired
+    private ValidationService validator;
     public record LoanRequest(String isbn) {}
 //    @PostMapping
 //    public ResponseEntity<?> createLoan(
@@ -78,14 +81,9 @@ public class LoanController {
     @PostMapping
     public ResponseEntity<?> createLoan(@RequestHeader("Authorization") String token,
                                         @RequestBody LoanRequest dto) {
-        token = token.replace("Bearer ", "");
-        if(jwtService.isExpired(token)) {
-            return new ResponseEntity<>("Token is expired", HttpStatus.UNAUTHORIZED);
-        }
-        if(!userService.getUserByEmail(jwtService.extractEmail(token)).orElse(null).getRole().toString().equals("client"))
-        {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
+        token=token.replace("Bearer ", "");
+        validator.validate(token,roles[0]);
+
         var loan = loanService.createLoan(Long.valueOf(userService.getUserByEmail(jwtService.extractEmail(token)).orElse(null).getId()), dto.isbn());
         return ResponseEntity.status(HttpStatus.CREATED).body(loan);
     }
@@ -135,14 +133,8 @@ public class LoanController {
 
     @PostMapping("/penalties")
     public ResponseEntity<?> calculatePenalties(@RequestHeader("Authorization") String token) {
-        token = token.replace("Bearer ", "");
-        if(jwtService.isExpired(token)) {
-            return new ResponseEntity<>("Token is expired", HttpStatus.UNAUTHORIZED);
-        }
-        if(!userService.getUserByEmail(jwtService.extractEmail(token)).orElse(null).getRole().toString().equals("librarian"))
-        {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
+        validator.validate(token,roles[1]);
+
         loanService.calculatePenalties();
         return ResponseEntity.ok(Map.of("message","Kary naliczone"));
     }
