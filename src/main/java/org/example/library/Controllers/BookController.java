@@ -5,10 +5,7 @@ import com.nimbusds.jose.util.Resource;
 import org.example.library.Entities.Author;
 import org.example.library.Entities.Book;
 import org.example.library.Repositories.BookRepository;
-import org.example.library.Services.AuthorService;
-import org.example.library.Services.BookService;
-import org.example.library.Services.JwtService;
-import org.example.library.Services.UserService;
+import org.example.library.Services.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
@@ -34,7 +31,7 @@ public class BookController {
     @Autowired
     private UserService userService;
     @Autowired
-    private BookRepository bookRepository;
+    private SerializationService serializationService;
 
     @GetMapping(value = "/",produces = "application/json")
     public List<Book> findAll() {
@@ -92,13 +89,13 @@ public class BookController {
             return ResponseEntity.ok()
                     .contentType(MediaType.APPLICATION_XML)
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=data.xml")
-                    .body(bookService.exportToXml());
+                    .body(serializationService.exportToXml());
         }
 
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=data.json")
-                .body(bookService.exportToJson());
+                .body(serializationService.exportToJson());
     }
     @PostMapping(value = "/import", consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
     public ResponseEntity<String> importData(@RequestBody String fileContent,
@@ -113,9 +110,9 @@ public class BookController {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
         if (contentType.contains("xml")) {
-            bookService.importXml(fileContent);
+            serializationService.importXml(fileContent);
         } else {
-            bookService.importJson(fileContent);
+            serializationService.importJson(fileContent);
         }
 
         return ResponseEntity.ok("Import zakończony.");

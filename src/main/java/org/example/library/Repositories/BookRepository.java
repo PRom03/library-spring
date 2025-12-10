@@ -20,4 +20,8 @@ public interface BookRepository extends JpaRepository<Book, Long> {
               or lower(b.publisher.name) LIKE :query
            """)
     List<Book> search(String query);
+    @Query("""
+SELECT b FROM Book b where b.category.id IN :categoryIds and b.isbn not in :excludedBookIsbns
+""")
+    List<Book> findByCategoryIdInAndIdNotIn(List<Integer> categoryIds, List<String> excludedBookIsbns);
 }

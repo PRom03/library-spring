@@ -1,27 +1,19 @@
 package org.example.library;
 
-import com.jayway.jsonpath.JsonPath;
 import org.example.library.Controllers.LoanController;
-import org.example.library.Entities.Loan;
 import org.example.library.Entities.User;
 import org.example.library.Services.JwtService;
 import org.example.library.Services.LoanService;
 import org.example.library.Services.UserService;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 
-import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.anyString;
@@ -33,7 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(controllers = LoanController.class)
 @AutoConfigureMockMvc(addFilters = false)
-public class LoanTest {
+public class LoanControllerTest {
     @Autowired
     private MockMvc mvc;
     @MockitoBean

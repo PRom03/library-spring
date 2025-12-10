@@ -64,23 +64,5 @@ public class BookService {
     public void delete(Book book) {
         bookrepository.delete(book);
     }
-    public String exportToJson() throws Exception {
-        List<Book> books = bookrepository.findAll();
-        return jsonMapper.writerWithDefaultPrettyPrinter().writeValueAsString(books);
-    }
 
-    public String exportToXml() throws Exception {
-        List<Book> books = bookrepository.findAll();
-        return xmlMapper.writerWithDefaultPrettyPrinter().writeValueAsString(books);
-    }
-
-    public void importJson(String data) throws Exception {
-        List<Book> books = jsonMapper.readValue(data, new TypeReference<>() {});
-        bookrepository.saveAll(books);
-    }
-
-    public void importXml(String data) throws Exception {
-        List<Book> books = xmlMapper.readValue(data, new TypeReference<>() {});
-        bookrepository.saveAll(books);
-    }
 }
