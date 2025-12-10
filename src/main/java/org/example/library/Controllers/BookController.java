@@ -32,6 +32,9 @@ public class BookController {
     private UserService userService;
     @Autowired
     private SerializationService serializationService;
+    @Autowired
+    private ValidationService validator;
+    private final String[]roles={"admin"};
 
     @GetMapping(value = "/",produces = "application/json")
     public List<Book> findAll() {
@@ -43,41 +46,22 @@ public class BookController {
     }
     @PostMapping(value = "/add",produces = "application/json")
     public ResponseEntity<?> addBook(@RequestBody BookService.BookDTO bookDto, @RequestHeader("Authorization") String token) {
-        token=token.replace("Bearer ", "");
-        if(jwtService.isExpired(token)) {
-            return new ResponseEntity<>("Token is expired", HttpStatus.UNAUTHORIZED);
-        }
-        if(!userService.getUserByEmail(jwtService.extractEmail(token)).orElse(null).getRole().toString().equals("admin"))
-        {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
+        validator.validate(token,roles[0]);
         return new ResponseEntity<>(bookService.save(bookDto), HttpStatus.CREATED);
     }
     @PatchMapping(value = "/{isbn}/update",produces = "application/json")
     public ResponseEntity<?> updateBook(@PathVariable String isbn,@RequestBody BookService.BookDTO bookDto,
                                           @RequestHeader("Authorization") String token) {
-        token=token.replace("Bearer ", "");
-        if(jwtService.isExpired(token)) {
-            return new ResponseEntity<>("Token is expired", HttpStatus.UNAUTHORIZED);
-        }
-        if(!userService.getUserByEmail(jwtService.extractEmail(token)).orElse(null).getRole().toString().equals("admin"))
-        {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
+        validator.validate(token,roles[0]);
+
         Book book=bookService.findBookByIsbn(isbn).orElse(null);
         if(book==null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         return new ResponseEntity<>(bookService.update(book,bookDto), HttpStatus.OK);
     }
     @DeleteMapping(value = "/{isbn}/delete")
     public ResponseEntity<?> deleteBook(@PathVariable String isbn,@RequestHeader("Authorization") String token) {
-        token=token.replace("Bearer ", "");
-        if(jwtService.isExpired(token)) {
-            return new ResponseEntity<>("Token is expired", HttpStatus.UNAUTHORIZED);
-        }
-        if(!userService.getUserByEmail(jwtService.extractEmail(token)).orElse(null).getRole().toString().equals("admin"))
-        {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
+        validator.validate(token,roles[0]);
+
         Book book=bookService.findBookByIsbn(isbn).orElse(null);
         if(book==null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         bookService.delete(book);
@@ -101,14 +85,8 @@ public class BookController {
     public ResponseEntity<String> importData(@RequestBody String fileContent,
                                              @RequestHeader("Content-Type") String contentType,@RequestHeader("Authorization")String token)
             throws Exception {
-        token=token.replace("Bearer ", "");
-        if(jwtService.isExpired(token)) {
-            return new ResponseEntity<>("Token is expired", HttpStatus.UNAUTHORIZED);
-        }
-        if(!userService.getUserByEmail(jwtService.extractEmail(token)).orElse(null).getRole().toString().equals("admin"))
-        {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
+        validator.validate(token,roles[0]);
+
         if (contentType.contains("xml")) {
             serializationService.importXml(fileContent);
         } else {
