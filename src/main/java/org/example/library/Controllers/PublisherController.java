@@ -6,7 +6,7 @@ import org.example.library.Services.CategoryService;
 import org.example.library.Services.JwtService;
 import org.example.library.Services.PublisherService;
 import org.example.library.Services.UserService;
-import org.example.library.SimpleDto;
+import org.example.library.Utilities.SimpleDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

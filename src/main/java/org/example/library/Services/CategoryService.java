@@ -1,9 +1,8 @@
 package org.example.library.Services;
 
-import org.example.library.Entities.Author;
 import org.example.library.Entities.Category;
 import org.example.library.Repositories.CategoryRepository;
-import org.example.library.SimpleDto;
+import org.example.library.Utilities.SimpleDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

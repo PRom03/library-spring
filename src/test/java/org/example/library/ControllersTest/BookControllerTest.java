@@ -1,11 +1,8 @@
-package org.example.library;
+package org.example.library.ControllersTest;
 
 import org.example.library.Controllers.BookController;
-import org.example.library.Controllers.LoanController;
 import org.example.library.Entities.Book;
-import org.example.library.Services.BookService;
-import org.example.library.Services.JwtService;
-import org.example.library.Services.UserService;
+import org.example.library.Services.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -34,6 +31,10 @@ class BookControllerTest {
     private JwtService jwtService;
     @MockitoBean
     private UserService userService;
+    @MockitoBean
+    private ValidationService validator;
+    @MockitoBean
+    private SerializationService serializationService;
     @Test
     void shouldReturnRecommendedBooks() throws Exception {
         List<Book> books = List.of(new Book(), new Book());

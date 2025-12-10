@@ -1,10 +1,11 @@
-package org.example.library;
+package org.example.library.ControllersTest;
 
 import org.example.library.Controllers.LoanController;
 import org.example.library.Entities.User;
 import org.example.library.Services.JwtService;
 import org.example.library.Services.LoanService;
 import org.example.library.Services.UserService;
+import org.example.library.Services.ValidationService;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +35,8 @@ public class LoanControllerTest {
     private UserService userService;
     @MockitoBean
     private JwtService jwtService;
-
+    @MockitoBean
+    private ValidationService validator;
     @ParameterizedTest
     @CsvSource(textBlock = """
 '9788301214575'

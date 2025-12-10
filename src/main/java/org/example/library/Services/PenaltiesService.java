@@ -1,7 +1,7 @@
 package org.example.library.Services;
 
 import org.example.library.Entities.Loan;
-import org.example.library.LoanStatus;
+import org.example.library.Utilities.LoanStatus;
 import org.example.library.Repositories.LoanRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

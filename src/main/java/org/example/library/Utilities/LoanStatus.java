@@ -1,4 +1,4 @@
-package org.example.library;
+package org.example.library.Utilities;
 
 public enum LoanStatus {
     loaned,
