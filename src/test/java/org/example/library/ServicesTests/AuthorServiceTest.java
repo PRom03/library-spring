@@ -1,4 +1,4 @@
-package org.example.library;
+package org.example.library.ServicesTests;
 
 import org.example.library.Entities.Author;
 import org.example.library.Repositories.AuthorRepository;

@@ -4,7 +4,6 @@ package org.example.library.Services;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
-import org.example.library.MyUserDetails;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
@@ -38,10 +37,7 @@ public class JwtService {
     }
 
 
-    public boolean validateToken(String token, MyUserDetails userDetails) {
-        String email = extractEmail(token);
-        return email.equals(userDetails.getEmail()) && !isExpired(token);
-    }
+
 
     public boolean isExpired(String token) {
         Date exp = Jwts.parser().setSigningKey(key)
