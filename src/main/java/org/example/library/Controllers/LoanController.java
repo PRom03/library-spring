@@ -29,56 +29,13 @@ public class LoanController {
     private JwtService jwtService;
 
     public record LoanRequest(String isbn) {}
-//    @PostMapping
-//    public ResponseEntity<?> createLoan(
-//            @RequestBody Map<String, String> body,
-//            @AuthenticationPrincipal MyUserDetails userDetails) {
-//
-//        String isbn = body.get("isbn");
-//        if (isbn == null || isbn.isBlank()) {
-//            return ResponseEntity.badRequest().body(Map.of("error", "Brak ISBN"));
-//        }
-//
-//        try {
-//            Book book = bookService.findBookByIsbn(isbn).orElse(null);
-//            if (book == null || book.getAvailable() == 0) {
-//                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-//                        .body(Map.of("error", "Książka niedostępna"));
-//            }
-//
-//            User user = userService.getUserById(userDetails.getId()).orElseThrow();
-//            boolean exists = loanService.exists(
-//                    user.getId(), book.getIsbn(), List.of("reserved", "loaned")
-//            );
-//            if (exists) {
-//                return ResponseEntity.status(HttpStatus.CONFLICT)
-//                        .body(Map.of("error", "Książka już zarezerwowana przez użytkownika"));
-//            }
-//
-//            Loan loan = new Loan();
-//            loan.setBook(book);
-//            loan.setUser(user);
-//            loan.setLoanDate(Instant.from(LocalDateTime.now()));
-//            loan.setStatus("reserved");
-//            loan.setProlonged(false);
-//
-//            loanService.save(loan);
-//
-//            book.setAvailable(book.getAvailable() - 1);
-//            bookService.save(book);
-//
-//            return ResponseEntity.status(HttpStatus.CREATED).body(loan);
-//
-//        } catch (Exception e) {
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-//                    .body(Map.of("error", "Server error"));
-//        }
-//    }
+
 
     @PostMapping
     public ResponseEntity<?> createLoan(@RequestHeader("Authorization") String token,
                                         @RequestBody LoanRequest dto) {
-        token = token.replace("Bearer ", "");
+        if(token.startsWith("Bearer"))token = token.replace("Bearer ", "");
+        else return new ResponseEntity<>("Token is invalid", HttpStatus.UNAUTHORIZED);
         if(jwtService.isExpired(token)) {
             return new ResponseEntity<>("Token is expired", HttpStatus.UNAUTHORIZED);
         }
@@ -93,7 +50,7 @@ public class LoanController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteLoan(@PathVariable Long id,
                                         @RequestHeader("Authorization") String token) {
-        token = token.replace("Bearer ", "");
+        if (token.startsWith("Bearer"))token = token.replace("Bearer ", "");
         if(jwtService.isExpired(token)) {
             return new ResponseEntity<>("Token is expired", HttpStatus.UNAUTHORIZED);
         }

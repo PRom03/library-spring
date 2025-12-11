@@ -15,14 +15,16 @@ public class ValidationService {
     }
 
     public ResponseEntity<?> validate(String token,String role){
-        token=token.replace("Bearer ", "");
+        if(token.startsWith("Bearer ")) token=token.replace("Bearer ", "");
+        else return new ResponseEntity<>("Token is expired", HttpStatus.UNAUTHORIZED);
+
         if(jwtService.isExpired(token)) {
             return new ResponseEntity<>("Token is expired", HttpStatus.UNAUTHORIZED);
         }
         if(jwtService.isExpired(token)) {
             return new ResponseEntity<>("Token is expired", HttpStatus.UNAUTHORIZED);
         }
-        if(!userService.getUserByEmail(jwtService.extractEmail(token)).orElse(null).getRole().toString().equals(role))
+        if(!userService.getUserByEmail(jwtService.extractEmail(token)).orElseThrow().getRole().toString().equals(role))
         {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
