@@ -19,12 +19,14 @@ public class SearchService {
     private final AuthorRepository authorRepository;
     private final CategoryRepository categoryRepository;
     private final PublisherRepository publisherRepository;
+
     public record SearchResultDto(
             List<Book> books,
             List<Author> authors,
             List<Category> categories,
             List<Publisher> publishers
-    ) {}
+    ) {
+    }
 
     public SearchService(BookRepository bookRepository, AuthorRepository authorRepository, CategoryRepository categoryRepository, PublisherRepository publisherRepository) {
         this.bookRepository = bookRepository;

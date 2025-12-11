@@ -1,10 +1,6 @@
 package org.example.library.Entities;
 
 import jakarta.persistence.*;
-import org.hibernate.annotations.ColumnDefault;
-
-import java.util.LinkedHashSet;
-import java.util.Set;
 
 @Entity
 @Table(name = "\"user\"", schema = "public", uniqueConstraints = {
@@ -30,15 +26,13 @@ public class User {
     private String password;
 
 
+    public User() {
 
+    }
 
-
-public User() {
-
-}
-public User(Long id) {
-    this.id= Math.toIntExact(id);
-}
+    public User(Long id) {
+        this.id = Math.toIntExact(id);
+    }
 
     public Integer getId() {
         return id;
@@ -81,7 +75,6 @@ public User(Long id) {
     }
 
 
-
     public UserRole getRole() {
         return role;
     }
@@ -89,11 +82,10 @@ public User(Long id) {
     public void setRole(UserRole role) {
         this.role = role;
     }
+
     @Enumerated(EnumType.STRING)
     @Column(name = "role", columnDefinition = "user_role not null")
     private UserRole role;
-
-
 
 
 }

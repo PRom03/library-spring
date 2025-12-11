@@ -31,12 +31,14 @@ public class SerializationService {
     }
 
     public void importJson(String data) throws Exception {
-        List<Book> books = jsonMapper.readValue(data, new TypeReference<>() {});
+        List<Book> books = jsonMapper.readValue(data, new TypeReference<>() {
+        });
         bookrepository.saveAll(books);
     }
 
     public void importXml(String data) throws Exception {
-        List<Book> books = xmlMapper.readValue(data, new TypeReference<>() {});
+        List<Book> books = xmlMapper.readValue(data, new TypeReference<>() {
+        });
         bookrepository.saveAll(books);
     }
 }

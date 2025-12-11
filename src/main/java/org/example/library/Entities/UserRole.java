@@ -1,8 +1,8 @@
 package org.example.library.Entities;
 
-    public enum UserRole{
-        client,
-        admin,
-        librarian,
-    }
+public enum UserRole {
+    client,
+    admin,
+    librarian,
+}
 

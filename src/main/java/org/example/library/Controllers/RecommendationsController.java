@@ -1,6 +1,5 @@
 package org.example.library.Controllers;
 
-import org.example.library.Entities.Book;
 import org.example.library.Services.JwtService;
 import org.example.library.Services.RecommendationsService;
 import org.example.library.Services.UserService;
@@ -10,8 +9,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/recommendations")
@@ -29,8 +26,8 @@ public class RecommendationsController {
 
     @GetMapping("/")
     public ResponseEntity<?> getUserRecommendations(@RequestHeader("Authorization") String token) {
-        if (token.startsWith("Bearer")) token=token.replace("Bearer ", "");
+        if (token.startsWith("Bearer")) token = token.replace("Bearer ", "");
         else return new ResponseEntity<>("Invalid token", HttpStatus.UNAUTHORIZED);
-        return new ResponseEntity<>(recommendationsService.getRecommendations(userService.getUserByEmail(jwtService.extractEmail(token.replace("Bearer ",""))).orElseThrow().getId()), HttpStatus.OK);
+        return new ResponseEntity<>(recommendationsService.getRecommendations(userService.getUserByEmail(jwtService.extractEmail(token.replace("Bearer ", ""))).orElseThrow().getId()), HttpStatus.OK);
     }
 }

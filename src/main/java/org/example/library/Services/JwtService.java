@@ -2,10 +2,7 @@ package org.example.library.Services;
 
 
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
@@ -16,8 +13,9 @@ import java.util.Date;
 @Service
 public class JwtService {
 
-    private static final long EXPIRATION_TIME = 1000 * 60 * 60 ;
+    private static final long EXPIRATION_TIME = 1000 * 60 * 60;
     private final Key key = Keys.hmacShaKeyFor(Base64.getDecoder().decode("bpgLU4UeHts67/e+jOsUlRG13qoBQFV0pcA5lS+7DSM="));
+
     public String generateToken(String email) {
         return Jwts.builder()
                 .setSubject(email)
@@ -35,8 +33,6 @@ public class JwtService {
                 .getBody()
                 .getSubject();
     }
-
-
 
 
     public boolean isExpired(String token) {

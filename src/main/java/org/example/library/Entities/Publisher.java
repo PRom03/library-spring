@@ -2,9 +2,6 @@ package org.example.library.Entities;
 
 import jakarta.persistence.*;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
-
 @Entity
 @Table(name = "publisher")
 public class Publisher {

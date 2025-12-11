@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 import java.util.Map;
 
@@ -55,12 +56,14 @@ public class UserController {
         return userService.getUserById(id)
                 .orElseThrow(() -> new RuntimeException("User not found with id " + id));
     }
+
     @GetMapping("/me")
     public User getMe(@RequestHeader("Authorization") String token) {
-        token=token.replace("Bearer ", "");
+        token = token.replace("Bearer ", "");
         return userService.getUserByEmail(jwtService.extractEmail(token)).orElseThrow();
     }
-    @PostMapping(value = "/register",produces = "application/json")
+
+    @PostMapping(value = "/register", produces = "application/json")
     public User createUser(@RequestBody UserService.RegisterRequest registerRequest) {
         return userService.createUser(registerRequest);
     }
@@ -69,13 +72,14 @@ public class UserController {
     public User updateUser(@PathVariable Long id, @RequestBody User user) {
         return userService.updateUser(id, user);
     }
-    @PostMapping(value="/login",produces = "application/json")
-    public ResponseEntity<Map<String,String>> login(@RequestBody LoginRequest loginRequest) {
+
+    @PostMapping(value = "/login", produces = "application/json")
+    public ResponseEntity<Map<String, String>> login(@RequestBody LoginRequest loginRequest) {
         User user = userService.getUserByEmail(loginRequest.getEmail())
                 .orElse(null);
 
         if (user == null || !passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("message","Nieprawidłowe dane logowania."));
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("message", "Nieprawidłowe dane logowania."));
         }
 
         String token = jwtService.generateToken(user.getEmail());
@@ -85,16 +89,19 @@ public class UserController {
                 "role", user.getRole().name()
         ));
     }
-    @GetMapping(value = "/",produces = "application/json")
-    public List<User> getUsers(){
+
+    @GetMapping(value = "/", produces = "application/json")
+    public List<User> getUsers() {
         return userService.getAllUsers();
 
     }
-    @GetMapping(value="/{email}/role")
+
+    @GetMapping(value = "/{email}/role")
     public ResponseEntity<?> findRole(@PathVariable String email) {
         User user = userService.getUserByEmail(email).orElseThrow();
-        return new ResponseEntity<>(Map.of("role",user.getRole().toString()), HttpStatus.OK);
+        return new ResponseEntity<>(Map.of("role", user.getRole().toString()), HttpStatus.OK);
     }
+
     @DeleteMapping("/{id}")
     public void deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);

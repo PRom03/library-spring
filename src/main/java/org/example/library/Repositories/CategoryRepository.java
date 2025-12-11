@@ -8,10 +8,11 @@ import java.util.List;
 
 public interface CategoryRepository extends JpaRepository<Category, Long> {
     Category findCategoryByName(String category);
+
     @Query("""
-           SELECT c 
-           FROM Category c
-           WHERE LOWER(c.name) LIKE :query
-           """)
+            SELECT c 
+            FROM Category c
+            WHERE LOWER(c.name) LIKE :query
+            """)
     List<Category> search(String query);
 }

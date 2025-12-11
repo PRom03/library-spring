@@ -12,6 +12,7 @@ public class MyUserDetails implements UserDetails {
     private String email;
     private Integer id;
     private String role;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of();
@@ -21,17 +22,21 @@ public class MyUserDetails implements UserDetails {
     public String getPassword() {
         return "";
     }
-    public MyUserDetails(User user){
+
+    public MyUserDetails(User user) {
         this.email = user.getEmail();
 
         this.id = user.getId();
     }
+
     public String getEmail() {
         return email;
     }
+
     public void setEmail(String email) {
         this.email = email;
     }
+
     @Override
     public String getUsername() {
         return "";
@@ -60,6 +65,7 @@ public class MyUserDetails implements UserDetails {
     public Integer getId() {
         return id;
     }
+
     public void setId(Integer id) {
         this.id = id;
     }
@@ -67,6 +73,7 @@ public class MyUserDetails implements UserDetails {
     public String getRole() {
         return role;
     }
+
     public void setRole(String role) {
         this.role = role;
     }

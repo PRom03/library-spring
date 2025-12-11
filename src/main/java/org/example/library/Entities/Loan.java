@@ -2,10 +2,8 @@ package org.example.library.Entities;
 
 import jakarta.persistence.*;
 import org.hibernate.annotations.ColumnDefault;
-import org.springframework.boot.context.properties.bind.DefaultValue;
 
 import java.math.BigDecimal;
-import java.time.Instant;
 import java.time.LocalDateTime;
 
 @Entity
@@ -38,8 +36,8 @@ public class Loan {
     @Column(name = "prolonged", nullable = false)
     private Boolean prolonged = false;
 
-    @Column(name="penalty",nullable = false)
-    private BigDecimal penalty= BigDecimal.valueOf(0);
+    @Column(name = "penalty", nullable = false)
+    private BigDecimal penalty = BigDecimal.valueOf(0);
 
     public Integer getId() {
         return id;

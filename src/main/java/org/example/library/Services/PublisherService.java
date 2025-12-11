@@ -13,24 +13,30 @@ import java.util.Optional;
 public class PublisherService {
     @Autowired
     private PublisherRepository publisherRepository;
+
     public PublisherService(PublisherRepository publisherRepository) {
         this.publisherRepository = publisherRepository;
     }
+
     public List<Publisher> findAll() {
         return publisherRepository.findAll();
     }
+
     public Optional<Publisher> findPublisherById(Long id) {
         return publisherRepository.findById(id);
     }
+
     public Publisher save(SimpleDto dto) {
         Publisher publisher = new Publisher();
         publisher.setName(dto.name());
         return publisherRepository.save(publisher);
     }
+
     public Publisher update(Publisher publisher, SimpleDto dto) {
         publisher.setName(dto.name());
         return publisherRepository.save(publisher);
     }
+
     public void delete(Publisher publisher) {
         publisherRepository.delete(publisher);
     }

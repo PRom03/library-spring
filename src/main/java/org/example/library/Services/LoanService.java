@@ -1,14 +1,14 @@
 package org.example.library.Services;
 
 import jakarta.transaction.Transactional;
-import org.example.library.Exceptions.*;
 import org.example.library.Entities.Loan;
-import org.example.library.Entities.UserRole;
 import org.example.library.Entities.User;
-import org.example.library.Utilities.LoanStatus;
+import org.example.library.Entities.UserRole;
+import org.example.library.Exceptions.LoanException;
 import org.example.library.Repositories.BookRepository;
 import org.example.library.Repositories.LoanRepository;
 import org.example.library.Repositories.UserRepository;
+import org.example.library.Utilities.LoanStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,7 +25,7 @@ public class LoanService {
     private LoanRepository loanRepository;
     @Autowired
     private UserRepository userRepository;
-//    @Autowired
+    //    @Autowired
 //    private JwtService jwtService;
     @Autowired
     private PenaltiesService penaltiesService;
@@ -34,7 +34,6 @@ public class LoanService {
     public void save(Loan loan) {
         loanRepository.save(loan);
     }
-
 
 
     public Loan createLoan(Long userId, String isbn) {
@@ -48,7 +47,7 @@ public class LoanService {
         var existing = loanRepository.findByUserIdAndBookIdAndStatusIn(
                 userId,
                 book.getIsbn(),
-                List.of(LoanStatus.reserved.toString(),LoanStatus.loaned.toString())
+                List.of(LoanStatus.reserved.toString(), LoanStatus.loaned.toString())
         );
         if (existing.isPresent()) {
             throw new LoanException("Książka już zarezerwowana");
@@ -72,15 +71,16 @@ public class LoanService {
         var loan = loanRepository.findById(loanId)
                 .orElseThrow(() -> new LoanException("Nie znaleziono"));
 
-        if (UserRole.client.toString().equals(role) &&  loan.getUser().getId().equals(userId)&&LoanStatus.reserved.toString().equals(loan.getStatus())) {
+        if (UserRole.client.toString().equals(role) && loan.getUser().getId().equals(userId) && LoanStatus.reserved.toString().equals(loan.getStatus())) {
             var book = loan.getBook();
-            book.setAvailable(book.getAvailable()+1);
+            book.setAvailable(book.getAvailable() + 1);
             bookRepository.save(book);
             loanRepository.delete(loan);
             return;
         }
         throw new LoanException("Brak uprawnień lub niewłaściwy status zamówienia.");
     }
+
     @Transactional
     public void markLoaned(Long loanId, String role) {
         if (!UserRole.librarian.toString().equals(role)) {
@@ -89,8 +89,9 @@ public class LoanService {
 
         var loan = loanRepository.findById(loanId)
                 .orElseThrow(() -> new LoanException("Nie znaleziono"));
-        if(!loan.getStatus().equals(LoanStatus.reserved.toString())) throw new LoanException("Książka nie jest wypożyczona")
-                ;
+        if (!loan.getStatus().equals(LoanStatus.reserved.toString()))
+            throw new LoanException("Książka nie jest wypożyczona")
+                    ;
         loan.setStatus(LoanStatus.loaned.toString());
         loan.setReturnDate(LocalDateTime.now().plusMonths(1));
         loanRepository.save(loan);
@@ -106,8 +107,9 @@ public class LoanService {
         var loan = loanRepository.findById(loanId)
                 .orElseThrow(() -> new LoanException("Nie znaleziono"));
 
-        if(!loan.getStatus().equals(LoanStatus.loaned.toString())) throw new LoanException("Książka nie jest wypożyczona")
-                ;
+        if (!loan.getStatus().equals(LoanStatus.loaned.toString()))
+            throw new LoanException("Książka nie jest wypożyczona")
+                    ;
         loan.setStatus(LoanStatus.returned.toString());
         loan.setReturnDate(LocalDateTime.now());
         loanRepository.save(loan);
@@ -118,17 +120,17 @@ public class LoanService {
     }
 
     @Transactional
-    public void prolongLoan(Long loanId, Long userId){
+    public void prolongLoan(Long loanId, Long userId) {
         var loan = loanRepository.findById(loanId)
                 .orElseThrow(() -> new LoanException("Nie znaleziono"));
 
-        if (!(loan.getUser().getId().equals(userId)||userRepository.findById(userId).orElseThrow().getRole().toString().equals(UserRole.librarian.toString()))) {
+        if (!(loan.getUser().getId().equals(userId) || userRepository.findById(userId).orElseThrow().getRole().toString().equals(UserRole.librarian.toString()))) {
             throw new LoanException("Brak uprawnień");
         }
         if (loan.getProlonged()) {
             throw new LoanException("Można przedłużyć tylko raz");
         }
-        if(loan.getStatus().equals(LoanStatus.returned.toString())) {
+        if (loan.getStatus().equals(LoanStatus.returned.toString())) {
             throw new LoanException("Książka już zwrócona.");
         }
         loan.setReturnDate(LocalDateTime.from(loan.getReturnDate()).plusMonths(1));
@@ -140,8 +142,9 @@ public class LoanService {
     public void calculatePenalties() {
         penaltiesService.calculatePenalties();
     }
-    public List<Loan> findAll(User user){
-        if(user.getRole().toString().equals(UserRole.client.toString())) {
+
+    public List<Loan> findAll(User user) {
+        if (user.getRole().toString().equals(UserRole.client.toString())) {
             return loanRepository.findByUserId(user.getId());
         }
         return loanRepository.findAll();

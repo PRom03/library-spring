@@ -1,12 +1,12 @@
 package org.example.library.Services;
 
-import org.example.library.Controllers.UserController;
 import org.example.library.Entities.User;
 import org.example.library.Entities.UserRole;
 import org.example.library.Repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -16,6 +16,7 @@ public class UserService {
     private UserRepository userRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
+
     public static class RegisterRequest {
         private String firstname;
         private String lastname;
@@ -69,7 +70,7 @@ public class UserService {
     }
 
     public User createUser(RegisterRequest request) {
-        User user=new User();
+        User user = new User();
         user.setEmail(request.getEmail());
         user.setFirstname(request.getFirstname());
         user.setLastname(request.getLastname());

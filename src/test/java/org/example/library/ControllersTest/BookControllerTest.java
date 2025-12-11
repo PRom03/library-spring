@@ -31,8 +31,7 @@ class BookControllerTest {
     private JwtService jwtService;
     @MockitoBean
     private UserService userService;
-    @MockitoBean
-    private ValidationService validator;
+
     @MockitoBean
     private SerializationService serializationService;
     @Test

@@ -2,9 +2,6 @@ package org.example.library.Entities;
 
 import jakarta.persistence.*;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
-
 
 @Entity
 @Table(name = "book")
@@ -34,7 +31,6 @@ public class Book {
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
-
 
 
     public Category getCategory() {

@@ -1,8 +1,8 @@
 package org.example.library.Services;
 
 import org.example.library.Entities.Loan;
-import org.example.library.Utilities.LoanStatus;
 import org.example.library.Repositories.LoanRepository;
+import org.example.library.Utilities.LoanStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,8 +23,9 @@ public class PenaltiesService {
         for (Loan loan : overdueLoans) {
             Duration overdue = Duration.between(loan.getReturnDate(), now);
             long daysOverdue = overdue.toDays();
-            if(overdue.toSeconds()>0) loan.setPenalty(BigDecimal.valueOf(0.01));
-            else if(daysOverdue>0)loan.setPenalty(BigDecimal.valueOf(daysOverdue * 0.10).setScale(2, RoundingMode.HALF_UP));
+            if (overdue.toSeconds() > 0) loan.setPenalty(BigDecimal.valueOf(0.01));
+            else if (daysOverdue > 0)
+                loan.setPenalty(BigDecimal.valueOf(daysOverdue * 0.10).setScale(2, RoundingMode.HALF_UP));
             loanRepository.save(loan);
         }
     }
